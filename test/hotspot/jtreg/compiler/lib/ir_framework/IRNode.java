@@ -1298,6 +1298,26 @@ public class IRNode {
         machOnlyNameRegex(VMLS_MASKED, "vmls_masked");
     }
 
+    public static final String VMASK_CMP_IMM5_I_SVE = PREFIX + "VMASK_CMP_IMM5_I_SVE" + POSTFIX;
+    static {
+        machOnlyNameRegex(VMASK_CMP_IMM5_I_SVE, "vmaskcmp_sve_imm5_I");
+    }
+
+    public static final String VMASK_CMP_IMM5_L_SVE = PREFIX + "VMASK_CMP_IMM5_L_SVE" + POSTFIX;
+    static {
+        machOnlyNameRegex(VMASK_CMP_IMM5_L_SVE, "vmaskcmp_sve_imm5_L");
+    }
+
+    public static final String VMASK_CMP_IMM7_I_SVE = PREFIX + "VMASK_CMP_IMM7_I_SVE" + POSTFIX;
+    static {
+        machOnlyNameRegex(VMASK_CMP_IMM7_I_SVE, "vmaskcmp_sve_imm7_I");
+    }
+
+    public static final String VMASK_CMP_IMM7_L_SVE = PREFIX + "VMASK_CMP_IMM7_L_SVE" + POSTFIX;
+    static {
+        machOnlyNameRegex(VMASK_CMP_IMM7_L_SVE, "vmaskcmp_sve_imm7_L");
+    }
+
     public static final String VNOT_I_MASKED = PREFIX + "VNOT_I_MASKED" + POSTFIX;
     static {
         machOnlyNameRegex(VNOT_I_MASKED, "vnotI_masked");
