@@ -85,6 +85,9 @@
   void sve_compare(PRegister pd, BasicType bt, PRegister pg,
                    FloatRegister zn, FloatRegister zm, int cond);
 
+  void sve_compare_imm(PRegister pd, BasicType bt, PRegister pg,
+                   FloatRegister zn, int imm, int cond);
+
   void sve_vmask_lasttrue(Register dst, BasicType bt, PRegister src, PRegister ptmp);
 
   // Vector cast

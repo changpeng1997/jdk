@@ -1131,6 +1131,45 @@ void C2_MacroAssembler::sve_compare(PRegister pd, BasicType bt, PRegister pg,
   }
 }
 
+// Clobbers: rflags
+void C2_MacroAssembler::sve_compare_imm(PRegister pd, BasicType bt, PRegister pg,
+                                    FloatRegister zn, int imm, int cond) {
+  assert(pg->is_governing(), "This register has to be a governing predicate register");
+  FloatRegister z = zn;
+  // Convert the original BoolTest condition to Assembler::condition.
+  Condition condition;
+  if (-16 <= imm && imm <= 15) {
+    switch (cond) {
+      case BoolTest::eq: condition = Assembler::EQ; break;
+      case BoolTest::ne: condition = Assembler::NE; break;
+      case BoolTest::le: condition = Assembler::LE; break;
+      case BoolTest::ge: condition = Assembler::GE; break;
+      case BoolTest::lt: condition = Assembler::LT; break;
+      case BoolTest::gt: condition = Assembler::GT; break;
+      default:
+        assert(false, "unsupported compare condition");
+        ShouldNotReachHere();
+    }
+  } else if (0 <= imm && imm <= 127) {
+      switch (cond) {
+        case BoolTest::le: condition = Assembler::LS; break;
+        case BoolTest::ge: condition = Assembler::HS; break;
+        case BoolTest::lt: condition = Assembler::LO; break;
+        case BoolTest::gt: condition = Assembler::HI; break;
+        default:
+          assert(false, "unsupported compare condition");
+          ShouldNotReachHere();
+      }
+  } else {
+      assert(false, "unsupported range of immediate");
+      ShouldNotReachHere();
+  }
+
+  SIMD_RegVariant size = elemType_to_regVariant(bt);
+  assert(is_integral_type(bt), "unsupported element type");
+  sve_cmp(condition, pd, size, pg, z, imm);
+}
+
 // Get index of the last mask lane that is set
 void C2_MacroAssembler::sve_vmask_lasttrue(Register dst, BasicType bt, PRegister src, PRegister ptmp) {
   SIMD_RegVariant size = elemType_to_regVariant(bt);

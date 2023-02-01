@@ -3522,6 +3522,43 @@ instruct vmaskcmp_sve(pReg dst, vReg src1, vReg src2, immI cond, rFlagsReg cr) %
   ins_pipe(pipe_slow);
 %}
 
+instruct vmaskcmp_sve_imm5_I(pReg dst, vReg src, immI imm_compared, immI cond, rFlagsReg cr) %{
+  predicate(UseSVE > 0 &&
+            (n->in(1)->in(2)->in(1)->get_int() >= -16 && n->in(1)->in(2)->in(1)->get_int() <= 15));
+  match(Set dst (VectorMaskCmp (Binary src (ReplicateB imm_compared)) cond));
+  match(Set dst (VectorMaskCmp (Binary src (ReplicateS imm_compared)) cond));
+  match(Set dst (VectorMaskCmp (Binary src (ReplicateI imm_compared)) cond));
+  effect(KILL cr);
+  format %{ "vmaskcmp_sve $dst, $src, $imm_compared, $cond\t# KILL cr" %}
+  ins_encode %{
+    BasicType bt = Matcher::vector_element_basic_type(this);
+    uint length_in_bytes = Matcher::vector_length_in_bytes(this);
+    assert(length_in_bytes == MaxVectorSize, "invalid vector length");
+    __ sve_compare_imm($dst$$PRegister, bt, ptrue, $src$$FloatRegister,
+                       (int)($imm_compared$$constant), (int)($cond$$constant));
+  %}
+  ins_pipe(pipe_slow);
+%}
+
+instruct vmaskcmp_sve_imm7_I(pReg dst, vReg src, immI imm_compared, immI cond, rFlagsReg cr) %{
+  predicate(UseSVE > 0 &&
+            (n->in(1)->in(2)->in(1)->get_int() >= 0 && n->in(1)->in(2)->in(1)->get_int() <= 127) &&
+            (n->in(2)->get_int() != BoolTest::eq && n->in(2)->get_int() != BoolTest::ne));
+  match(Set dst (VectorMaskCmp (Binary src (ReplicateB imm_compared)) cond));
+  match(Set dst (VectorMaskCmp (Binary src (ReplicateS imm_compared)) cond));
+  match(Set dst (VectorMaskCmp (Binary src (ReplicateI imm_compared)) cond));
+  effect(KILL cr);
+  format %{ "vmaskcmp_sve $dst, $src, $imm_compared, $cond\t# KILL cr" %}
+  ins_encode %{
+    BasicType bt = Matcher::vector_element_basic_type(this);
+    uint length_in_bytes = Matcher::vector_length_in_bytes(this);
+    assert(length_in_bytes == MaxVectorSize, "invalid vector length");
+    __ sve_compare_imm($dst$$PRegister, bt, ptrue, $src$$FloatRegister,
+                       (int)($imm_compared$$constant), (int)($cond$$constant));
+  %}
+  ins_pipe(pipe_slow);
+%}
+
 instruct vmaskcmp_masked(pReg dst, vReg src1, vReg src2, immI cond,
                          pRegGov pg, rFlagsReg cr) %{
   predicate(UseSVE > 0);
